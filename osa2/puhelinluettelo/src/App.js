@@ -1,5 +1,48 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
+
+const Notification = ({ message }) => {
+  const notificationStyle = {
+      color: 'green',
+      background: 'lightgrey',
+      fontSize: '20px',
+      borderStyle: 'solid',
+      borderRadius: '5px',
+      padding: '10px',
+      marginBottom: '10px'
+  }
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div style={notificationStyle}>
+      {message}
+    </div>
+  )
+}
+
+const ErrorMessage = ({ message }) => {
+  const errorStyle = {
+      color: 'red',
+      background: 'white',
+      fontSize: '20px',
+      borderStyle: 'solid',
+      borderRadius: '5px',
+      padding: '10px',
+      marginBottom: '10px'
+  }
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div style={errorStyle}>
+      {message}
+    </div>
+  )
+}
+
 
 const PersonForm = (props) => {
 return (
@@ -34,36 +77,53 @@ const FilterForm = (props) => {
   )
 }
 
-const RenderPersons = ({persons, filter}) =>{
+const RenderPersons = ({persons, filter, confirmDeletion}) =>{
   if (filter === '') {
     return(persons.map(person =>
-      <li key={persons.indexOf(person)}> {person.name} {person.number}</li>))
+      <li 
+      key={persons.indexOf(person)}> {person.name} {person.number} <button onClick= { () => confirmDeletion(person)}> delete</button>
+      </li>))
   }
   else{
     return(persons.filter(persone => persone.name.toLowerCase().includes(filter.toLowerCase())).map(person =>
-      <li key={persons.indexOf(person)}> {person.name} {person.number}</li>))
+      <li 
+      key={persons.indexOf(person)}> {person.name} {person.number} <button onClick= { () => confirmDeletion(person)}> delete</button>
+      </li>))
   }
 }
 
 
 const App = () => {
-  const [ persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  const [ persons, setPersons] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber] = useState('')
   const [ filter, setFilter] = useState('')
+  const [ notificationMessage, setNotificationMessage] = useState(null)
+  const [ errorMessage, setErrorMessage] = useState(null)
 
+  function confirmDeletion (person) {
+    const result = window.confirm(`Delete ${person.name} ?`)
+    console.log(person.id)
+    if (result) {
+      personService
+        .pop(person.id)
+    setPersons(persons.filter(persone => persone.id !== person.id))
+    setNotificationMessage(`Removed ${person.name}`)
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 2000)
+    }
+    else {
+      console.log('not confirmed')
+      return
+    }
+  }
   useEffect(()=> {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
-      console.log('done')
   }, [])
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -82,23 +142,63 @@ const App = () => {
     }
     const personas = persons.map(persones => persones.name) 
     if (personas.includes(newName)){
-      alert(`${newName} is already added to the phonebook`)
+      const overwrite = window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)
+      console.log(overwrite)
+      if (overwrite) {
+        const oldPersonIndex = persons.findIndex(p => p.name === newName)
+        personService
+          .insert(persons[oldPersonIndex].id,person)
+          .then(returnedPerson => {
+            let newPersons = [...persons]
+            newPersons[oldPersonIndex] = returnedPerson
+            setPersons(newPersons)
+          })
+          .catch(error => {
+            setErrorMessage(`Information of ${person.name} has already been removed from the server`)
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 4000)
+            personService
+              .getAll()
+              .then(updatedPersons => {
+                setPersons(updatedPersons)
+                })
+          })
+          setNewName('')
+          setNewNumber('')
+          if (errorMessage != null){
+            setNotificationMessage(`Changed ${person.name}'s number`)
+            setTimeout(() => {
+              setNotificationMessage(null)
+            }, 2000)
+          }
+      }
       return
     }
-    setPersons(persons.concat(person))
+    personService
+      .create(person)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+      })
     setNewName('')
     setNewNumber('')
+    setNotificationMessage(`Added ${person.name}`)
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 2000)
   }
   
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage}/>
+      <ErrorMessage message ={errorMessage}/>
       <FilterForm handleFilterChange = {handleFilterChange} filter = {filter}/>
       <h2>add a new</h2>
       <PersonForm handleNameChange={handleNameChange} handleNumberChange= {handleNumberChange} newName= {newName} 
       newNumber ={newNumber} addPerson= {addPerson} event= {this}/>
       <h2>Numbers</h2>
-      <RenderPersons persons = {persons} filter= {filter}/>
+      <RenderPersons persons = {persons} filter= {filter} setPersons={setPersons} confirmDeletion = {confirmDeletion}/>
     </div>
   )
 
