@@ -1,1 +1,1 @@
-palautusrepositorio FS kurssille
+Palautusrepositorio FS kurssille.
