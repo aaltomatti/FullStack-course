@@ -1,2 +1,1 @@
-# FullStack-course
-palautusrepositorio FS kurssille
+Palautusrepositorio FS kurssille.
