@@ -1,7 +1,7 @@
 {
   "name": "puhelinluettelo",
   "version": "1.0.0",
-  "description": "\u001b[A\u001b[BKierroksen 3 puhelinluettelo backend",
+  "description": "Kierroksen 3 puhelinluettelo backend",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -11,6 +11,7 @@
   "author": "Matti Aalto",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "morgan": "^1.10.0"
   },
