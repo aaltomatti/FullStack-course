@@ -1,4 +1,4 @@
-const dummy = (blogs) => {
+const dummy = () => {
     return 1
 }
 
@@ -18,9 +18,10 @@ const favoriteBlog = (blogs) => {
         return favorite
     }
     return blogs.length === 0
-    ? 'No blogs'
-    : blogs.reduce(reducer, { title: blogs[0].title, author: blogs[0].author, likes: blogs[0].likes })
+        ? 'No blogs'
+        : blogs.reduce(reducer, { title: blogs[0].title, author: blogs[0].author, likes: blogs[0].likes })
 }
+
 module.exports = {
     dummy, totalLikes, favoriteBlog
 }
