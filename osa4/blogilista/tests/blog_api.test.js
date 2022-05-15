@@ -23,6 +23,7 @@ beforeEach(async () => {
     await Blog.insertMany(initialBlogs)
 })
 const api = supertest(app)
+
 describe('API GET', () => {
     test('correct amount of blogs are returned', async () => {
         const response = await api.get('/api/blogs').expect('Content-Type', /application\/json/)
@@ -36,6 +37,7 @@ describe('API GET', () => {
         })
     })
 })
+
 describe('API POST', () => {
     test('when blog added increase number of blogs', async () => {
         const newBlog =
@@ -79,6 +81,41 @@ describe('API POST', () => {
             .post('/api/blogs')
             .send(noTitleUrlBlog)
             .expect(400)
+    })
+})
+
+describe('API DELETE', () => {
+    test('delete blog with a given id from db', async () => {
+        const blogs = await Blog.find({})
+        const targetBlog = blogs[0]
+        await api
+            .delete(`/api/blogs/${targetBlog.id}`)
+            .expect(204)
+        const blogsAfter = await Blog.find({})
+        expect(blogsAfter).toHaveLength(initialBlogs.length-1)
+        const titles = blogsAfter.map( blog => blog.title )
+        expect(titles).not.toContain(targetBlog.title)
+    } )
+})
+
+describe('API PUT', () => {
+    test('change blog contents with a given id', async () => {
+        const blogs = await Blog.find({})
+        const targetBlog = blogs[0]
+        const newBlog = {
+            title: 'sepontarinat',
+            author: 'seppo',
+            url: 'asdsad',
+            likes: '50',
+        }
+        await api
+            .put(`/api/blogs/${targetBlog.id}`)
+            .send(newBlog)
+            .expect(200)
+        const blogsAfter = await Blog.find({})
+        expect(blogsAfter).toHaveLength(initialBlogs.length)
+        const titles = blogsAfter.map( blog => blog.title )
+        expect(titles).toContain(newBlog.title)
     })
 })
 
