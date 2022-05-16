@@ -1,9 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hdHRpMTIiLCJpZCI6IjYyODI0MTQ2MDc5ZDZkZjIzNzU5NmQ3MyIsImlhdCI6MTY1MjcwNTY0MX0.bt1sAQDedWmR08dQkQjda5-Dt2W3v9pFmyEaawQ-NJg
 
 {
-    "title": "Sepin tarinat",
-    "author": "Sepi Marjamäki",
-    "url": "www.SM.fi",
-    "likes": "5"
+    "title": "Matin tarinat",
+    "author": "Marze",
+    "url": "www.MM.fi",
+    "likes": "100"
 }

@@ -24,7 +24,7 @@ beforeEach(async () => {
 })
 const api = supertest(app)
 
-describe('API GET', () => {
+describe('Blogs API GET', () => {
     test('correct amount of blogs are returned', async () => {
         const response = await api.get('/api/blogs').expect('Content-Type', /application\/json/)
         expect(response.body).toHaveLength(initialBlogs.length)
@@ -38,7 +38,7 @@ describe('API GET', () => {
     })
 })
 
-describe('API POST', () => {
+describe('Blogs API POST', () => {
     test('when blog added increase number of blogs', async () => {
         const newBlog =
         {
@@ -84,7 +84,7 @@ describe('API POST', () => {
     })
 })
 
-describe('API DELETE', () => {
+describe('Blogs API DELETE', () => {
     test('delete blog with a given id from db', async () => {
         const blogs = await Blog.find({})
         const targetBlog = blogs[0]
@@ -98,7 +98,7 @@ describe('API DELETE', () => {
     } )
 })
 
-describe('API PUT', () => {
+describe('Blogs API PUT', () => {
     test('change blog contents with a given id', async () => {
         const blogs = await Blog.find({})
         const targetBlog = blogs[0]

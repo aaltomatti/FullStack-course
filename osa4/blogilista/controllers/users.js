@@ -5,11 +5,11 @@ const bcrypt = require('bcrypt')
 
 usersRouter.get('/', async (request, response) => {
     const users = await User
-      .find({})
-      .populate('blogs', { username: 1, name: 1, id: 1 })
+        .find({})
+        .populate('blogs', { url: 1, title: 1, author: 1, id: 1 })
     response.json(users)
-  })
-  
+})
+
 
 usersRouter.post('/', async (request, response) => {
     const { username, name, password } = request.body
@@ -22,18 +22,18 @@ usersRouter.post('/', async (request, response) => {
     const targetUser = await User
         .findOne({ username })
     if (targetUser) {
-      return response.status(400).json({ error: 'username must be unique' })
+        return response.status(400).json({ error: 'username must be unique' })
     }
 
     const saltRounds = 10 //magic 10
     const pwdHash = await bcrypt.hash(password, saltRounds)
-  
+
     const user = new User({
-      username,
-      name,
-      pwdHash,
+        username,
+        name,
+        pwdHash,
     })
-  
+
     const savedUser = await user.save()
     response.status(201).json(savedUser)
 })

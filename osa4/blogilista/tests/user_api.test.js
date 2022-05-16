@@ -22,7 +22,7 @@ beforeEach(async () => {
 })
 const api = supertest(app)
 
-describe('User API POST', () => {
+describe('Users API POST', () => {
     test('Users with erroneous credentials are not added to db', async () => {
         const incorrectUser = {
             username: 'ad',
@@ -38,4 +38,7 @@ describe('User API POST', () => {
         const usernamesAfter = usersAfter.map(user => user.username)
         expect(usernamesAfter).not.toContain(incorrectUser.username)
     })
-}) 
+})
+afterAll(() => {
+    mongoose.connection.close()
+})

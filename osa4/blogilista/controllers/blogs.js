@@ -1,20 +1,34 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+
 
 blogsRouter.get('/', async (request, response) => {
-    const blogs = await Blog.find({})
+    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1 })
     response.json(blogs)
 })
 
 blogsRouter.post('/', async (request, response) => {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if (!request.token || !decodedToken.id){
+        return response.status(401).json({ error: 'missing token or no authorization' })
+    }
+    const loggedInUser = await User.findById(decodedToken.id)
     if (!request.body.title && !request.body.url){
-        response.status(400).end()
+        return response.status(400).json({ error: 'title and url fields are required' })
     }
-    else{
-        const blog = new Blog(request.body)
-        const savedBlog = await blog.save()
-        response.status(201).json(savedBlog)
-    }
+    const blog = new Blog({
+        title: request.body.title,
+        author: request.body.author,
+        url: request.body.url,
+        likes: request.body.likes,
+        user: loggedInUser,
+    })
+    const savedBlog = await blog.save()
+    loggedInUser.blogs = loggedInUser.blogs.concat(savedBlog._id)
+    await loggedInUser.save()
+    response.status(201).json(savedBlog)
 })
 blogsRouter.delete('/:id', async (request, response) => {
     await Blog.findByIdAndRemove(request.params.id)
