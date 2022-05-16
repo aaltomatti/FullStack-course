@@ -1,6 +1,5 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
 
@@ -14,7 +13,7 @@ blogsRouter.post('/', async (request, response) => {
     if (!request.token || !decodedToken.id){
         return response.status(401).json({ error: 'missing or invalid token' })
     }
-    const loggedInUser = await User.findById(decodedToken.id)
+    const loggedInUser = request.user
     if (!request.body.title && !request.body.url){
         return response.status(400).json({ error: 'title and url fields are required' })
     }
