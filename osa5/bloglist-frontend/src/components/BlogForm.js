@@ -30,13 +30,13 @@ const BlogForm = ({ createBlog, setNotification, setErrorMessage }, user, ) => {
   }
 
   return (
-    <form on onSubmit={addBlog}>
+    <form onSubmit={addBlog}>
       <label>Title:</label>
-      <input type="title" value={title} name = "Username" onChange={({ target }) => setTitle(target.value)} /><br></br>
+      <input type="title" value={title} onChange={({ target }) => setTitle(target.value) } placeholder="Title" /><br></br>
       <label>Author:</label>
-      <input type="author" value={author} name="Password" onChange={({ target }) => setAuthor(target.value)} /><br></br>
+      <input type="author" value={author} onChange={({ target }) => setAuthor(target.value)} placeholder="Author" /><br></br>
       <label>URL:</label>
-      <input type="url" value={url} name="Password" onChange={({ target }) => setUrl(target.value)} /><br></br>
+      <input type="url" value={url} onChange={({ target }) => setUrl(target.value)} placeholder="URL" /><br></br>
       <input type="submit" value="create" />
     </form>
   )

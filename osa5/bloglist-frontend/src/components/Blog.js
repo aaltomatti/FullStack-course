@@ -23,11 +23,18 @@ const Blog = ({ blog, likeBlog, deleteBlog, username }) => {
         hide
         </button>
         <div>
-          {blog.url}<br></br>
-          {blog.likes}
+          <label>
+            {blog.url}
+          </label>
+          <br></br>
+          <label className='likes'>
+            {blog.likes}
+          </label>
           <button onClick={() => likeBlog(blog)}>like</button><br></br>
-          {blog.author}<br></br>
-          {console.log(username)}
+          <label>
+            {blog.author}
+          </label>
+          <br></br>
           {blog.user.username === username ?
             <button onClick={() => deleteBlog(blog, blog.id)}>
                         delete
