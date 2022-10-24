@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 
 const Blog = ({ blog, likeBlog, deleteBlog, username }) => {
   const [open, setOpen] = useState(false)
+  console.log(username)
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
